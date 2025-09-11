@@ -1,0 +1,24 @@
+# --- Core Framework ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+
+# --- GraphQL ---
+strawberry-graphql[fastapi]==0.243.0
+
+# --- Database (MongoDB async) ---
+motor==3.5.1      # driver async de MongoDB
+pymongo==4.9.2    # base driver
+
+# --- Caching / PubSub ---
+redis==5.0.8
+
+# --- Data validation / typing ---
+pydantic==2.9.2
+pydantic-settings==2.5.2  # para manejar config/env
+
+# --- Background tasks / workers (opcional para crawl) ---
+celery[redis]==5.4.0
+aiohttp==3.10.5           # fetch async de páginas (Wikipedia API)
+
+# --- Utils ---
+python-slugify==8.0.4     # slugs para artículos
