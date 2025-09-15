@@ -15,9 +15,18 @@ class CrawlService:
                 return await response.json()
 
     async def crawl_article(self, article_id: str):
-        # Logic to crawl a Wikipedia article and update the database
-        pass
+        # Fetch article data from Wikipedia API
+        url = f'https://en.wikipedia.org/api/rest_v1/page/summary/{article_id}'
+        article_data = await self.fetch_article(url)
+        # Update the database with the fetched article data
+        self.db.articles.update_one(
+            {'_id': article_id},
+            {'$set': article_data},
+            upsert=True
+        )
 
     async def start_real_time_exploration(self, start_node: str):
-        # Logic to start real-time exploration using WebSockets
+        # Placeholder for WebSocket logic
+        print(f'Starting real-time exploration from node: {start_node}')
+        # This would involve WebSocket communication to send updates to the client
         pass
