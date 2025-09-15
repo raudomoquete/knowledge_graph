@@ -22,3 +22,4 @@ aiohttp==3.10.5           # fetch async de páginas (Wikipedia API)
 
 # --- Utils ---
 python-slugify==8.0.4     # slugs para artículos
+wikipedia-api==0.5.4
