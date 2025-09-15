@@ -11,6 +11,7 @@ import logging
 import wikipediaapi
 import requests
 import certifi
+from bs4 import BeautifulSoup
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -80,11 +81,37 @@ async def fetch_article_links(article_title: str) -> dict:
         logging.error(f"Request failed with status code {response.status_code}")
         return []
 
+# Modify the explore endpoint to clean the HTML summary
 @app.get("/api/explore/{article_title}", response_model=dict)
 async def explore_graph(article_title: str, depth: int = 1):
+    # Try to get the article from the database
     article = article_repo.get_article_by_id(article_title)
     if not article:
-        raise HTTPException(status_code=404, detail="Article not found")
+        # Fetch the article from Wikipedia if not found
+        url = f'https://en.wikipedia.org/w/api.php?action=parse&page={article_title}&prop=text&format=json'
+        response = requests.get(url, headers=headers, verify=False)
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                page = data.get('parse', {})
+                html_content = page.get('text', {}).get('*', '')
+                # Use BeautifulSoup to extract plain text
+                soup = BeautifulSoup(html_content, 'html.parser')
+                summary = soup.get_text()[:200]  # Get a snippet of the article
+                article = {
+                    '_id': article_title,
+                    'title': page.get('title', article_title),
+                    'summary': summary,
+                }
+                # Store the article in the database
+                article_repo.save_article(article)
+            except requests.exceptions.JSONDecodeError:
+                logging.error("Failed to decode JSON from response")
+                raise HTTPException(status_code=500, detail="Error fetching article from Wikipedia")
+        else:
+            logging.error(f"Request failed with status code {response.status_code}")
+            raise HTTPException(status_code=404, detail="Article not found")
+    # Fetch links from the article
     links = await fetch_article_links(article_title)
     nodes = [{"id": article_title, "label": article_title, "summary": article.get('summary', '')}]
     edges = []
