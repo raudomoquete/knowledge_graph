@@ -20,3 +20,7 @@ class ArticleRepository:
     def get_all_explorations(self) -> list:
         # Logic to retrieve all explorations from the database
         return list(self.db.articles.find())
+
+    def delete_exploration(self, exploration_id: str):
+        # Logic to delete an exploration by ID
+        self.db.articles.delete_one({'_id': exploration_id})
