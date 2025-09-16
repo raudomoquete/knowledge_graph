@@ -128,6 +128,7 @@ async def save_exploration(exploration_data: dict):
 
 @app.get("/api/explorations", response_model=List[dict])
 async def list_explorations():
+    # Retrieve all articles as explorations
     explorations = article_repo.get_all_explorations()
     return explorations
 

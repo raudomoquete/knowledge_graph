@@ -16,3 +16,7 @@ class ArticleRepository:
     def get_article_by_id(self, article_id: str) -> dict:
         # Logic to retrieve an article by ID
         return self.db.articles.find_one({'_id': article_id})
+
+    def get_all_explorations(self) -> list:
+        # Logic to retrieve all explorations from the database
+        return list(self.db.articles.find())
